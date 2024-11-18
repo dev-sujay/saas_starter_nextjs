@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type SalesInstallmentInfo {
+  annualInterestRate      Int?
+  applyInterest           Boolean
+  autoReminder            Boolean
+  installmentCount        Int?
+  interestType            String?
+  nextDueAmount           Float?
+  nextDueDate             DateTime? @db.Date
+  totalAmountWithInterest Float?
+  totalDueInstallments    Int?
+  totalInterest           Float?
+  totalPaidInstallments   Int?
+}
+
+type SalesInstallments {
+  id          String    @map("_id") @db.ObjectId
+  amount      Float
+  dueDate     DateTime  @db.Date
+  instlNo     Int
+  isPaid      Boolean
+  paymentDate DateTime? @db.Date
+  paymentMode String?
+  saleId      String    @db.ObjectId
+  voucherNo   String
+}
+
+type SalesProducts {
+  id          String @map("_id") @db.ObjectId
+  productId   String @db.ObjectId
+  productName String
+  quantity    Int
+  unitPrice   Int
+}
+
+type UsersSubscriptionInfo {
+  isActive     Boolean
+  isOnTrial    Boolean
+  trialEndDate DateTime @db.Date
+}
+
+type UsersUsage {
+  emailUsage    Int
+  invoiceUsage  Int
+  smsUsage      Int?
+  whatsappUsage Int?
+}
+
+model categories {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  v         Int      @map("__v")
+  companyId String   @db.ObjectId
+  createdAt DateTime @db.Date
+  name      String
+  updatedAt DateTime @db.Date
+}
+
+model companies {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  v                 Int      @map("__v")
+  address           String
+  createdAt         DateTime @db.Date
+  customerCount     Int
+  email             String
+  invoiceTemplateNo Int
+  logo              String?
+  name              String
+  phone             String
+  updatedAt         DateTime @db.Date
+  userId            String   @db.ObjectId
+}
+
+model customers {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  v             Int      @map("__v")
+  companyId     String   @db.ObjectId
+  createdAt     DateTime @db.Date
+  customerGroup String
+  email         String   @unique(map: "email_1")
+  name          String
+  phone         String
+  status        String
+  totalOrders   Int
+  updatedAt     DateTime @db.Date
+}
+
+model plans {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  v                   Int      @map("__v")
+  createdAt           DateTime @db.Date
+  disabled            Boolean
+  emailEnabled        Boolean
+  emailLimitPerDay    Int
+  features            String[]
+  monthlyPrice        Int
+  name                String
+  smsEnabled          Boolean
+  smsLimitPerDay      Int
+  updatedAt           DateTime @db.Date
+  whatsappEnabled     Boolean
+  whatsappLimitPerDay Int
+  yearlyPrice         Int
+}
+
+model products {
+  id                       String   @id @default(auto()) @map("_id") @db.ObjectId
+  v                        Int      @map("__v")
+  categoryId               String   @db.ObjectId
+  companyId                String   @db.ObjectId
+  createdAt                DateTime @db.Date
+  description              String?
+  images                   String[]
+  name                     String
+  purchasePrice            Int
+  retailDiscountAmount     Int
+  retailDiscountPercentage Int
+  retailDiscountedPrice    Int
+  retailPrice              Int
+  stock                    Int
+  stockAsOn                DateTime @db.Date
+  stockMin                 Int
+  stockOpening             Int
+  updatedAt                DateTime @db.Date
+  wholesaleMinQty          Int
+}
+
+model sales {
+  id              String                @id @default(auto()) @map("_id") @db.ObjectId
+  v               Int                   @map("__v")
+  companyId       String                @db.ObjectId
+  createdAt       DateTime              @db.Date
+  customerEmail   String
+  customerId      String                @db.ObjectId
+  customerName    String
+  customerPhone   String
+  deliveryDate    DateTime?             @db.Date
+  deliveryDueDate DateTime?             @db.Date
+  dueAmount       Int
+  dueDate         DateTime?             @db.Date
+  grandTotal      Int
+  installmentInfo SalesInstallmentInfo?
+  installments    SalesInstallments[]
+  invoiceNo       String
+  isDelivered     Boolean
+  isInstallment   Boolean?
+  isPaid          Boolean
+  paidAmount      Int?
+  paymentDate     DateTime?             @db.Date
+  paymentDueDate  DateTime?             @db.Date
+  paymentMode     String?
+  products        SalesProducts[]
+  totalAmount     Int
+  updatedAt       DateTime              @db.Date
+  voucherNo       String?
+}
+
+
+model users {
+  id                  String                @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt           DateTime              @db.Date
+  email               String
+  emailBalanceLeft    Int
+  hasCompany          Boolean
+  name                String
+  password            String
+  phone               String
+  smsBalanceLeft      Int
+  subscriptionInfo    UsersSubscriptionInfo
+  updatedAt           DateTime              @db.Date
+  usage               UsersUsage
+  userType            String
+  verified            Boolean
+  whatsappBalanceLeft Int
+}
